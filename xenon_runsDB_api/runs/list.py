@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from xenon_runsDB_api import app, api, mongo
+from xenon_runsDB_api.app import app, api, mongo
 
 
 class RunsList(Resource):

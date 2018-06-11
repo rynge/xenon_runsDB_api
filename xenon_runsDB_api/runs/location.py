@@ -3,8 +3,8 @@ from xenon_runsDB_api import app, api, mongo
 from bson.json_util import dumps
 
 
-class RunsList(Resource):
-    def get(self):
+class RunsLocationList(Resource):
+    def get(self, location):
         for x in mongo.db.runs_new.find():
             json_dump = dumps(x)
             app.logger.debug('%s', json_dump)
@@ -12,4 +12,4 @@ class RunsList(Resource):
         return [x for x in mongo.db.runs_new.find()]
 
 
-api.add_resource(RunsList, '/runs/')
+api.add_resource(RunsList, '/runs/location/<string:rse>')
