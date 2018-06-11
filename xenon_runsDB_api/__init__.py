@@ -37,6 +37,5 @@ class Root(Resource):
 api.add_resource(Root, '/')
 
 
-import xenon_runsDB_api.runs.list
-import xenon_runsDB_api.runs.tag
-import xenon_runsDB_api.run.run
+from xenon_runsDB_api.runs import *
+from xenon_runsDB_api.run import *
