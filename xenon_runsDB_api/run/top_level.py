@@ -6,7 +6,8 @@ class RunTopLevelObjectID(Resource):
     def get(self, object_id, top_level):
         app.logger.debug("Requesting data for run with object ID %s"
                          % object_id)
-        result = mongo.db.runs_new.find_one_or_404({"_id": object_id})
+        result = mongo.db.runs_new.find_one_or_404({"_id": object_id},
+                                                   {top_level: 1})
         return result[top_level]
 
 
@@ -14,7 +15,8 @@ class RunTopLevelRunID(Resource):
     def get(self, run_id, top_level):
         app.logger.debug("Requesting data for run with run number %s"
                          % run_id)
-        result = mongo.db.runs_new.find_one_or_404({"number": run_id})
+        result = mongo.db.runs_new.find_one_or_404({"number": run_id},
+                                                   {top_level: 1})
         return result[top_level]
 
 
@@ -22,7 +24,10 @@ class RunTopLevelTimestamp(Resource):
     def get(self, timestamp, top_level):
         app.logger.debug("Requesting data for run with timestamp %s"
                          % timestamp)
-        result = mongo.db.runs_new.find_one_or_404({"name": timestamp})
+        result = mongo.db.runs_new.find_one_or_404({"name": timestamp},
+                                                   {top_level: 1})
+        app.logger.info("Query result: %s "
+                         % result)
         return result[top_level]
 
 
