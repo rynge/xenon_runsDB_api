@@ -47,11 +47,11 @@ api.add_resource(RunSecondLevelObjectID,
 api.add_resource(RunSecondLevelRunID,
                  ('/run/runnumber/<int:run_id>/'
                   '<string:top_level>/<string:second_level>/'),
-                 endpoint="run_object_id_secondlevel")
+                 endpoint="run_run_id_secondlevel")
 api.add_resource(RunSecondLevelTimestamp,
                  ('/run/timestamp/<string:timestamp>/'
                   '<string:top_level>/<string:second_level>/'),
-                 endpoint="run_object_id_secondlevel")
+                 endpoint="run_timestamp_secondlevel")
 
 api.add_resource(RunSecondLevelObjectID,
                  ('/runs/objectid/<ObjectId:object_id>/'
@@ -60,8 +60,8 @@ api.add_resource(RunSecondLevelObjectID,
 api.add_resource(RunSecondLevelRunID,
                  ('/runs/runnumber/<int:run_id>/'
                   '<string:top_level>/<string:second_level>/'),
-                 endpoint="runs_object_id_secondlevel")
+                 endpoint="runs_run_id_secondlevel")
 api.add_resource(RunSecondLevelTimestamp,
                  ('/runs/timestamp/<string:timestamp>/'
                   '<string:top_level>/<string:second_level>/'),
-                 endpoint="runs_object_id_secondlevel")
+                 endpoint="runs_timestamp_secondlevel")
