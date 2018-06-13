@@ -11,4 +11,4 @@ class RunsTag(Resource):
         return results
 
 
-api.add_resource(RunsTag, '/runs/tag/<string:tag>')
+api.add_resource(RunsTag, '/runs/tag/<string:tag>/')

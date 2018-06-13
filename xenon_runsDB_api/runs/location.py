@@ -12,4 +12,4 @@ class RunsLocationList(Resource):
         return [x for x in mongo.db.runs_new.find()]
 
 
-api.add_resource(RunsList, '/runs/location/<string:rse>')
+api.add_resource(RunsList, '/runs/location/<string:rse>/')

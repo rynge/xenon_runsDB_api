@@ -11,4 +11,4 @@ class RunsList(Resource):
         return results
 
 
-api.add_resource(RunsList, '/runs')
+api.add_resource(RunsList, '/runs/')
