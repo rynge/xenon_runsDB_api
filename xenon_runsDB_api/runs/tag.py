@@ -1,13 +1,11 @@
 from flask_restful import Resource
-from xenon_runsDB_api.app import app, api, mongo
-
+from xenon_runsDB_api import util
+from xenon_runsDB_api.app import app, api
 
 class RunsTag(Resource):
     def get(self, tag):
         app.logger.debug("Getting all runs with tag %s" % tag)
-        cursor = mongo.db.runs_new.find({"tags.name": tag})
-        app.logger.debug('Total documents requested %s', cursor.count())
-        results = [x for x in cursor]
+        results = util.get_data_single_top_level(query, "data")
         return results
 
 
