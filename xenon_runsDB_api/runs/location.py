@@ -1,15 +1,23 @@
 from flask_restful import Resource
-from xenon_runsDB_api import app, api, mongo
-from bson.json_util import dumps
+from xenon_runsDB_api import util
+from xenon_runsDB_api.app import app, api
 
 
 class RunsLocationList(Resource):
     def get(self, location):
-        for x in mongo.db.runs_new.find():
-            json_dump = dumps(x)
-            app.logger.debug('%s', json_dump)
-            app.logger.debug('%s', x.keys())
-        return [x for x in mongo.db.runs_new.find()]
+        query = {"data": {"$elemMatch": {"host": "rucio-catalogue",
+                                         "rse": location}}}
+        return util.get_data_single_top_level(query)
 
 
-api.add_resource(RunsList, '/runs/location/<string:rse>/')
+class RunsLocationListDataType(Resource):
+    def get(self, rse, data_field=None):
+        query = {"data": {"$elemMatch": {"type": data_type,
+                                         "rse": rse}}}
+        return util.get_data_single_top_level(query, data_field)
+
+
+api.add_resource(RunsLocationList,
+                 '/runs/location/<string:location>/')
+api.add_resource(RunsLocationListDataType,
+                 '/runs/location/<string:location>/<string:data_type>')
