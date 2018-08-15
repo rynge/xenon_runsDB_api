@@ -1,15 +1,28 @@
 import os
+import json
+from datetime import datetime
 from flask import Flask
 from flask_restful import Resource, Api
 from flask_pymongo import PyMongo
 from flask import make_response
+from bson import ObjectId
 from bson.json_util import dumps
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        if isinstance(o, datetime):
+            return o.isoformat()
+        return json.JSONEncoder.default(self, o)
+
 
 MONGO_URL = os.environ.get('MONGO_URL')
 if not MONGO_URL:
     MONGO_URL = "mongodb://localhost:27017/run"
 
 app = Flask(__name__)
+app.json_encoder = JSONEncoder
 
 app.config['MONGO_URI'] = MONGO_URL
 mongo = PyMongo(app)
@@ -36,5 +49,5 @@ class Root(Resource):
 
 api.add_resource(Root, '/')
 
-from xenon_runsDB_api.runs import list, tag
+from xenon_runsDB_api.runs import status, list, tag, query, detector, location
 from xenon_runsDB_api.run import run, gains, top_level, second_level, third_level
