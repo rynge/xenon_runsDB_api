@@ -1,3 +1,4 @@
+import flask
 from flask_restful import Resource
 from xenon_runsDB_api.app import app, api, mongo
 
@@ -8,7 +9,7 @@ class RunsList(Resource):
         cursor = mongo.db.runs_new.find()
         app.logger.debug('Total documents requested %s', cursor.count())
         results = [x for x in cursor]
-        return results
+        return flask.jsonify({"results": results})
 
 
 api.add_resource(RunsList, '/runs/')
