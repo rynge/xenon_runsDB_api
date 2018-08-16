@@ -44,34 +44,34 @@ class RunTimestampGains(Gains):
 
 # Adding routes according what identifier is used.
 api.add_resource(RunObjectIDGains,
-                 '/run/objectid/<ObjectId:object_id>/gains',
+                 '/run/objectid/<ObjectId:object_id>/gains/',
                  endpoint="run_object_id_gains")
 api.add_resource(RunRunIDGains,
-                 '/run/runnumber/<int:run_number>/gains',
+                 '/run/runnumber/<int:run_number>/gains/',
                  endpoint="run_run_id_gains")
 api.add_resource(RunRunIDGains,
-                 '/run/number/<int:run_number>/gains',
+                 '/run/number/<int:run_number>/gains/',
                  endpoint="run_run_number_gains")
 api.add_resource(RunTimestampGains,
-                 '/run/timestamp/<string:timestamp>/gains',
+                 '/run/timestamp/<string:timestamp>/gains/',
                  endpoint="run_timestamp_gains")
 api.add_resource(RunTimestampGains,
-                 '/run/name/<string:timestamp>/gains',
+                 '/run/name/<string:timestamp>/gains/',
                  endpoint="run_timestamp_name_gains")
 # Including the path for runs. Just in case we change our
 # mind down the road
 api.add_resource(RunObjectIDGains,
-                 '/runs/objectid/<ObjectId:object_id>/gains',
+                 '/runs/objectid/<ObjectId:object_id>/gains/',
                  endpoint="runs_object_id_gains")
 api.add_resource(RunRunIDGains,
-                 '/runs/runnumber/<int:run_number>/gains',
+                 '/runs/runnumber/<int:run_number>/gains/',
                  endpoint="runs_run_id_gains")
 api.add_resource(RunRunIDGains,
-                 '/runs/number/<int:run_number>/gains',
+                 '/runs/number/<int:run_number>/gains/',
                  endpoint="runs_run_number_gains")
 api.add_resource(RunTimestampGains,
-                 '/runs/timestamp/<string:timestamp>/gains',
+                 '/runs/timestamp/<string:timestamp>/gains/',
                  endpoint="runs_timestamp_gains")
 api.add_resource(RunTimestampGains,
-                 '/runs/name/<string:timestamp>/gains',
+                 '/runs/name/<string:timestamp>/gains/',
                  endpoint="runs_timestamp_name_gains")
