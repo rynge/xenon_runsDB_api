@@ -39,7 +39,7 @@ class RunSecondLevel(Resource):
              "name": 1,
              "number": 1,
              "{first}.{second}".format(first=top_level, 
-                                       second=second_level): 1}})
+                                       second=second_level): 1})
         app.logger.debug("Query result: %s "
                          % result)
         return flask.jsonify({"results": result})
