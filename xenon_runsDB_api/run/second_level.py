@@ -1,4 +1,5 @@
-from flask import abort
+import inspect
+import flask
 from flask_restful import Resource
 from xenon_runsDB_api.common.util import get_result_ready
 from xenon_runsDB_api.app import app, api, mongo
@@ -55,7 +56,7 @@ class RunSecondLevelObjectID(RunSecondLevel):
                               top_level=top_level,
                               second_level=second_level,
                               object_id=object_id))
-        return self._get_(self, "_id", object_id, top_level, second_level)
+        return self._get_("_id", object_id, top_level, second_level)
 
 
 class RunSecondLevelRunID(RunSecondLevel):
@@ -68,7 +69,7 @@ class RunSecondLevelRunID(RunSecondLevel):
                               top_level=top_level,
                               second_level=second_level,
                               run_id=run_id))
-        return self._get_(self, "number", run_id, top_level, second_level)
+        return self._get_("number", run_id, top_level, second_level)
 
 
 class RunSecondLevelTimestamp(RunSecondLevel):
@@ -82,7 +83,7 @@ class RunSecondLevelTimestamp(RunSecondLevel):
                               top_level=top_level,
                               second_level=second_level,
                               timestamp=timestamp))
-        return self._get_(self, "name", timestamp, top_level, second_level) 
+        return self._get_("name", timestamp, top_level, second_level) 
 
 
 api.add_resource(RunSecondLevelObjectID,

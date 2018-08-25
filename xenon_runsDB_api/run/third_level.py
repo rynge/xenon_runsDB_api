@@ -1,4 +1,4 @@
-from flask import abort
+import flask
 from flask_restful import Resource
 from xenon_runsDB_api.app import app, api, mongo
 
@@ -54,7 +54,7 @@ class RunThirdLevelObjectID(Resource):
                               top_level=top_level,
                               second_level=second_level,
                               object_id=object_id))
-        return self._get_(self, "_id", object_id, top_level,
+        return self._get_("_id", object_id, top_level,
                           second_level, third_level)
 
 
@@ -65,7 +65,7 @@ class RunThirdLevelRunID(Resource):
                               top_level=top_level,
                               second_level=second_level,
                               run_id=run_id))
-        return self._get_(self, "number", run_id, top_level,
+        return self._get_("number", run_id, top_level,
                           second_level, third_level)
 
 
@@ -76,7 +76,7 @@ class RunThirdLevelTimestamp(Resource):
                               top_level=top_level,
                               second_level=second_level,
                               timestamp=timestamp))
-        return self._get_(self, "name", timestamp, top_level,
+        return self._get_("name", timestamp, top_level,
                           second_level, third_level)
 
 
