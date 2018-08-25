@@ -42,7 +42,7 @@ class RunThirdLevel(Resource):
              "number": 1,
              "{first}.{second}.{third}".format(first=top_level, 
                                                second=second_level,
-                                               third=third_level): 1}})
+                                               third=third_level): 1})
         app.logger.debug("Query result: %s "
                          % result)
         return flask.jsonify({"results": result})
