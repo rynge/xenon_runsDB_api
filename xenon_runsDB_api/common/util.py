@@ -22,7 +22,7 @@ def get_data_single_top_level(query, additional_top_level=None):
         top_level_fields = top_level_fields + additional_top_level
     elif isinstance(additional_top_level, str):
         top_level_fields.append(additional_top_level)
-    elif:
+    else:
         return flask.abort(404, "Please pass a string or list of fields")
     desired_fields = {tlf: 1 
                       for tlf in top_level_fields}
