@@ -79,7 +79,7 @@ source, query individual run documents up to three-levels deep, etc.
 * "Pseudo" status - MongoDB queries to get status of a run through "data" 
 field have been translated into a status for the run
 * Additions/updates only for necessary fields, e.g. gains
-* Read-only queries return anywhere one to many run documents
+* Read-only queries return list of run identifiers
 * Updates and additions can only access a single run document at a time. NOTE:
 This may change
 
@@ -87,25 +87,29 @@ This may change
 
 There are certain quantities and documents that users want to access frequently. 
 The main information that users want to be accessed are the complete database 
-document for an individual run or a sub-section of said document. To access the
-the documents, the API provides several ways to access the run documents. The
-documents can be accessed either through their `name` (timestamp of run start), 
-`number` (number of the run), and the MongoDB `objectid`. These are accessed 
-through
+document for an individual run or a sub-section of said document and list
+the runs associated with a certain set of criteria, e.g. sources, tags, location
+detector type, etc.
+
+#### Single Runs
+
+The API provides several ways to access the run documents. The documents can be 
+accessed either through their `name` (timestamp of run start), `number` 
+(number of the run), and the MongoDB `objectid`. The routes are
 
 * `name`:
-    * `/runs/name/<run name>`
-    * `/run/name/<run name>`
-    * `/runs/timestamp/<run name>`
-    * `/run/timestamp/<run name>`
+  * `/runs/name/<run name>`
+  * `/run/name/<run name>`
+  * `/runs/timestamp/<run name>`
+  * `/run/timestamp/<run name>`
 * `number`
-    * `/runs/runnumber/<run number>`
-    * `/run/runnumber/<run number>`
-    * `/runs/number/<run number>`
-    * `/run/number/<run number>`
+  * `/runs/runnumber/<run number>`
+  * `/run/runnumber/<run number>`
+  * `/runs/number/<run number>`
+  * `/run/number/<run number>`
 * `objectid`
-    * `/runs/objectid/<object id>`
-    * `/run/objectid/<object id>`
+  * `/runs/objectid/<object id>`
+  * `/run/objectid/<object id>`
 
 One can also access the only the sub-sections of a single document through their
 keys. For example, to access the `data` document of a given run one simply has 
@@ -113,9 +117,20 @@ to add `data` to the URL: `/runs/number/<run number>/data`. One can access
 up to three levels deep, e.g. 
 `/runs/number/<run number>/<top level>/<second level>/<third level>`
 
-To list 
+#### Set of Runs
 
+Listing a set of runs can currently be done through the following criteria:
 
+* Detector: Detector type of the run
+* Location: All runs at a certain RSE
+* Source: Calibration source being used for this run, background runs don't 
+have a source
+* Status: "Pseudo" status of run, see below
+* Tags: All runs with a certain tag
+
+The API returns a list of `JSON` objects that contain the run identifiers. The
+entire run document for each run will not be returned. This was necessary to 
+reduce the query execution time and keep the amount of data returned reasonable.
 
 ### "Pseudo" Status
 
@@ -131,8 +146,11 @@ for an easier access to the various states, the REST API support creates
 * `processed`: Data has completed processing
 * `new_run`: Data taking is complete and run hasn't been added to rucio catalog
 
-Once a request is made against the API for a certain status, the API will 
-return a `JSON`-object. This will typically be a list of documents.
+### Adding/Updating Fields
+
+
+
+
 
 ## Current Status
 
