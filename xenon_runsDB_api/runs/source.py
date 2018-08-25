@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from xenon_runsDB_api import util
+from xenon_runsDB_api.common import util
 from xenon_runsDB_api.app import app, api, mongo
 
 
@@ -15,4 +15,5 @@ class RunsSource(Resource):
             return abort(404)
 
 api.add_resource(RunsSource,
-                '/runs/source/<string:source>/<string:data_field>')
+                 '/runs/source/<string:source>/',
+                 '/runs/source/<string:source>/<string:data_field>/')
