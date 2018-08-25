@@ -4,14 +4,57 @@ from webargs.flaskparser import use_kwargs
 from flask_restful import Resource
 from xenon_runsDB_api.app import app, api, mongo
 
+"""
+Getting and editing the gains for a run
+"""
 
+# webargs/Marshmellow de/serialization object definition
+# In this case the gain object is a list of floats, that are greater than or 
+# equal to 0. 
 gain_args = {"gains": 
-            fields.List(fields.Float(validate=lambda val: val >= 0.),
-                                     required=True)}
+             fields.List(fields.Float(validate=lambda val: val >= 0.),
+                                      required=True)}
 
 
 class Gains(Resource):
+    """
+    Super class that provides semi-hidden generalized versions of functions
+    needed to GET and PUT for the gains. 
+    """
+    def _get_(self, key, value):
+        """
+        Generalized GET function to retrieve the gains
+
+        Args:
+            key (string): Key to limit query by
+            value (string, int, BSON object ID): Search limit value
+
+        Returns:
+            If query successful: JSON object with run identifiers and the gains
+            If not: returns 404
+        """
+        result = mongo.db.runs_new.find_one_or_404(
+            {key: value},
+            {"_id": 1,
+             "name": 1,
+             "number": 1,
+             "processor.DEFAULT.gains": 1})
+        app.logger.debug("Query gains: %s "
+                         % result)
+        return flask.jsonify({"results": result}) 
+
     def _put_(self, key, value, gains):
+        """
+        Generalized PUT function to insert gains
+
+        Args:
+            key (string): Key to limit query by
+            value (string, int, BSON object ID): Search limit value
+            gains (list of floats): Gains to use in this DB object
+
+        Returns:
+            JSON object that shows the run document before and after the change
+        """
         run_doc_before = mongo.db["runs_new"].find_one_or_404(
             {key: value})
         mongo.db["runs_new"].find_one_and_update(
@@ -25,18 +68,42 @@ class Gains(Resource):
 
 
 class RunObjectIDGains(Gains):
+    """
+    Inherited class from run that provides interface when using object IDs
+    """
+    def get(self, object_id):
+        return self._get_("_id", object_id)
+
+    # Decorater passes the "gains" object that was parsed out of the json
+    # piece of the PUT request to the kwarg of the function
     @use_kwargs(gain_args, locations=["json"])
     def put(self, object_id, gains):
         return self._put_("_id", object_id, gains)
 
 
 class RunRunIDGains(Gains):
+    """
+    Inherited class from run that provides interface when using run number
+    """
+    def get(self, run_number):
+        return self._get_("number", run_number)
+
+    # Decorater passes the "gains" object that was parsed out of the json
+    # piece of the PUT request to the kwarg of the function
     @use_kwargs(gain_args, locations=["json"])
     def put(self, run_number, gains):
         return self._put_("number", run_number, gains)
 
 
 class RunTimestampGains(Gains):
+    """
+    Inherited class from run that provides interface when using timestamp
+    """
+    def get(self, timestamp):
+        return self._get_("timestamp", timestamp)
+
+    # Decorater passes the "gains" object that was parsed out of the json
+    # piece of the PUT request to the kwarg of the function
     @use_kwargs(gain_args, locations=["json"])
     def put(self, timestamp, gains):
         return self._put_("name", timestamp, gains)

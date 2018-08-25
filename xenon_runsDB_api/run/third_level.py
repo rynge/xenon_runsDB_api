@@ -3,53 +3,81 @@ from flask_restful import Resource
 from xenon_runsDB_api.app import app, api, mongo
 
 """
-Getting the entire document for a run given a unique identifier for
+Getting the third-level entry for run given a unique identifier for
 the desired run. In this case there are three possible identifiers
 the database specific documennt or object ID, the run number
 (or run id), and the timestamp in YYMMDD_HHMM format.
 """
 
+class RunThirdLevel(Resource):
+    """
+    Super class that provides semi-hidden generalized versions of functions
+    needed to GET.
+
+    TODO: Create PUT - Update third level doc 
+    """
+    def _get_(self, key, value, top_level, second_level, third_level):
+        """
+        Generalized GET function to make DB retrieval calls and limits return
+        to desired information.
+
+        Args:
+            key (string): Key in the run document to filter by
+            value (string, int, BSON object ID): Search limit value
+            top_level (string): Top level key in run document to return to user
+            second_level (string): Key to the first nested quantity in the 
+                                   top level object
+            third_level (string): Key of the first nested quantity in the
+                                  second level object, i.e. second nested
+                                  quantity of the top level objected
+        
+        Returns:
+            If query successful: JSON object with limited run document
+            If not: returns 404
+        """
+        result = mongo.db.runs_new.find_one_or_404(
+            {key: value},
+            {"_id": 1,
+             "name": 1,
+             "number": 1,
+             "{first}.{second}.{third}".format(first=top_level, 
+                                               second=second_level,
+                                               third=third_level): 1}})
+        app.logger.debug("Query result: %s "
+                         % result)
+        return flask.jsonify({"results": result})
+
 class RunThirdLevelObjectID(Resource):
     def get(self, object_id, top_level, second_level, third_level):
-        app.logger.debug("Requesting data for run with object ID %s"
-                         % object_id)
-        result = mongo.db.runs_new.find_one_or_404(
-            {"_id": object_id},
-            {"_id": 0,
-             "%s.%s.%s" % (top_level, second_level, third_level): 1})
-        app.logger.debug("Query Result %s" % result)
-        if not result:
-            return abort(404)
-        else:
-            return result[top_level][second_level][third_level]
+        app.logger.debug(("Requesting {top_level}.{second_level}.{third_level} "
+                          "data for run with object ID {object_id}").format(
+                              top_level=top_level,
+                              second_level=second_level,
+                              object_id=object_id))
+        return self._get_(self, "_id", object_id, top_level,
+                          second_level, third_level)
 
 
 class RunThirdLevelRunID(Resource):
     def get(self, run_id, top_level, second_level, third_level):
-        app.logger.debug("Requesting data for run with run number %s"
-                         % run_id)
-        result = mongo.db.runs_new.find_one_or_404(
-            {"number": run_id},
-            {"_id": 0,
-             "%s.%s.%s" % (top_level, second_level, third_level): 1})
-        if not result:
-            return abort(404)
-        else:
-            return result[top_level][second_level][third_level]
+        app.logger.debug(("Requesting {top_level}.{second_level}.{third_level} "
+                          "data for run with run number {run_id}").format(
+                              top_level=top_level,
+                              second_level=second_level,
+                              run_id=run_id))
+        return self._get_(self, "number", run_id, top_level,
+                          second_level, third_level)
 
 
 class RunThirdLevelTimestamp(Resource):
     def get(self, timestamp, top_level, second_level, third_level):
-        app.logger.debug("Requesting data for run with timestamp %s"
-                         % timestamp)
-        result = mongo.db.runs_new.find_one_or_404(
-            {"name": timestamp},
-            {"_id": 0,
-             "%s.%s.%s" % (top_level, second_level, third_level): 1})
-        if not result:
-            return abort(404)
-        else:
-            return result[top_level][second_level][third_level]
+        app.logger.debug(("Requesting {top_level}.{second_level}.{third_level} "
+                          "data for run with name {timestamp}").format(
+                              top_level=top_level,
+                              second_level=second_level,
+                              timestamp=timestamp))
+        return self._get_(self, "name", timestamp, top_level,
+                          second_level, third_level)
 
 
 api.add_resource(RunThirdLevelObjectID,
