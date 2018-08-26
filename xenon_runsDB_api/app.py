@@ -1,10 +1,10 @@
 import os
 import json
+import flask
 from datetime import datetime
-from flask import Flask
+from flask import url_for
 from flask_restful import Resource, Api
 from flask_pymongo import PyMongo
-from flask import make_response
 from bson import ObjectId
 from bson.json_util import dumps
 
@@ -21,7 +21,7 @@ MONGO_URL = os.environ.get('MONGO_URL')
 if not MONGO_URL:
     MONGO_URL = "mongodb://localhost:27017/run"
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
 app.json_encoder = JSONEncoder
 
 app.config['MONGO_URI'] = MONGO_URL
@@ -29,7 +29,7 @@ mongo = PyMongo(app)
 
 
 def output_json(obj, code, headers=None):
-    resp = make_response(dumps(obj), code)
+    resp = flask.make_response(dumps(obj), code)
     resp.headers.extend(headers or {})
     return resp
 
@@ -38,6 +38,8 @@ DEFAULT_REPRESENTATIONS = {'application/json': output_json}
 api = Api(app)
 api.representations = DEFAULT_REPRESENTATIONS
 
+from xenon_runsDB_api.runs import status, list, tag, query, detector, location
+from xenon_runsDB_api.run import run, gains, data
 
 class Root(Resource):
     def get(self):
@@ -49,5 +51,10 @@ class Root(Resource):
 
 api.add_resource(Root, '/')
 
-from xenon_runsDB_api.runs import status, list, tag, query, detector, location
-from xenon_runsDB_api.run import run, gains, top_level, second_level, third_level
+class SiteMap(Resource):
+    def get(self):
+        return flask.jsonify(
+            {"routes": ['%s' % rule for rule in app.url_map.iter_rules()]})
+
+
+api.add_resource(SiteMap, '/sitemap')
