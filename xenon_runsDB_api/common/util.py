@@ -35,18 +35,29 @@ def get_data_single_top_level(query, additional_top_level=None):
     app.logger.debug("results %s" % results)
     return flask.jsonify({"results": results})
 
-def get_result_ready(result, top_level, second_level):
-    """
 
+
+def result_formatting(result, top_level=None, second_level=None,
+                      third_level=None):
     """
-    if (isinstance(result[top_level], list) or
-        isinstance(result[top_level], tuple)):
-        filtered_results = [record[second_level]
-                            for record in result[top_level]]
-        return filtered_results
-    if isinstance(result[top_level], dict):
-        return result[top_level][second_level]
-    if not (isinstance(result[top_level], list) or
-            isinstance(result[top_level], tuple) or
-            isinstance(result[top_level], dict)):
-        return flask.abort(404)
+    
+    """
+    if top_level:
+        if isinstance(result[top_level], dict) and second_level:
+            filter_result = result.pop(top_level)
+            if second_level and not third_level:
+                new_entry = {"{top_level}.{second_level}".format(
+                    top_level=top_level,
+                    second_level=second_level): filter_result[second_level]}    
+            elif second_level and third_level:
+                new_entry = {"{top_level}.{second_level}.{third_level}".format(
+                    top_level=top_level,
+                    second_level=second_level,
+                    third_level=third_level):
+                    filter_result[second_level][third_level]}
+            result.update(new_entry)
+    return result
+
+
+def result_filtering(result, top_level, filter_expr):
+    pass
