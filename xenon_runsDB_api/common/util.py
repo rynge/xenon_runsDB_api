@@ -18,11 +18,11 @@ def get_data_single_top_level(query, additional_top_level=None):
     # Only return the Object ID, run number, and run name by default
     # Add the desired fields either as a list of str
     top_level_fields = ["_id", "number", "name"]
-    if isinstance(additional_top_level, list):
+    if additional_top_level and isinstance(additional_top_level, list):
         top_level_fields = top_level_fields + additional_top_level
-    elif isinstance(additional_top_level, str):
+    elif additional_top_level and isinstance(additional_top_level, str):
         top_level_fields.append(additional_top_level)
-    else:
+    elif additional_top_level:
         return flask.abort(404, "Please pass a string or list of fields")
     desired_fields = {tlf: 1 
                       for tlf in top_level_fields}
@@ -33,7 +33,7 @@ def get_data_single_top_level(query, additional_top_level=None):
     # Need to convert cursor to list
     results = [x for x in cursor]
     app.logger.debug("results %s" % results)
-    return flask.jsonify({"results": results})
+    return results
 
 
 
