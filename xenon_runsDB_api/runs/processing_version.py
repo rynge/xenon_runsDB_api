@@ -1,34 +1,24 @@
+import flask
 from flask_restful import Resource
-from xenon_runsDB_api import util
+from xenon_runsDB_api.common import util
 from xenon_runsDB_api.app import app, api, mongo
 
 
 class RunsProcessingVersion(Resource):
-    def get(self, status, data_field=None):
+    def get(self, version):
         app.logger.debug('Requesting all runs with status: %s', status)
-        if status == "not_processed":
-            query = {"$not": {"$elemMatch": {"type": "processed"}},
-                     "$elemMatch": {"type": "raw",
-                                    "status": "transferred"}}
-        elif status == "processing":
-            query = {"$elemMatch": {"type": "processed",
-                                    "status": "processing"}}
-        elif status == "processed":
-            # No processed data and raw data is transferring
-            query = {"$elemMatch": {"type": "processed",
-                                    "status": "processed"}}
-        elif status == "transferring":
-            # No processed data and raw data is transferring
-            query = {"$not": {"$elemMatch": {"type": "processed"}},
-                     "$elemMatch": {"type": "raw",
-                                    "status": "transferring"}}
-        query = {"data": query}
-        results = util.get_data_single_top_level(query, data_field)
+        if not version.startswith('v'):
+            version = "v" + version
+        query = {"data": {"$elemMatch": {"type": "processed",
+                                         "status": "transferred",
+                                         "pax_version": version}}}
+        results = util.get_data_single_top_level(query, "data")
         app.logger.debug("results: %s" % results)
-        return results
+        if results:
+            return results
+        else:
+            return flask.abort(404)
 
 
-api.add_resource(RunsStatus, '/runs/status/<string:status>')
-api.add_resource(RunsStatusPAXVersion, ('/runs/status/<string:status>/'
-                                        ('pax_version/<string:pax_version>/'
-                                         '<string:data_field>'))
+api.add_resource(RunsProcessingVersion, 
+                 '/runs/process_version/<string:version>')

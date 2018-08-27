@@ -16,14 +16,15 @@ and the timestamp in YYMMDD_HHMM format.
 class Run(Resource):
     """
     Super class that provides semi-hidden generalized versions of functions
-    needed to GET and DELETE. Provides 
+    needed to GET and DELETE.
 
     TODO: Finish POST function for run documents. 
     """
     def _get_(self, key, value, top_level=None, second_level=None,
               third_level=None):
         """
-        Generalized GET function to make DB retrieval calls
+        Generalized GET function to make DB retrieval calls, including 
+        filter down to the third level. 
 
         Args:
             key (string): Key in the run document to filter by

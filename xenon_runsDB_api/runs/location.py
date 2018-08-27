@@ -1,23 +1,21 @@
+import flask
 from flask_restful import Resource
 from xenon_runsDB_api.common import util
 from xenon_runsDB_api.app import app, api
 
 
 class RunsLocationList(Resource):
-    def get(self, location):
+    def get(self, location, data_field=None):
         query = {"data": {"$elemMatch": {"host": "rucio-catalogue",
                                          "rse": location}}}
-        return util.get_data_single_top_level(query)
-
-
-class RunsLocationListDataType(Resource):
-    def get(self, rse, data_field=None):
-        query = {"data": {"$elemMatch": {"type": data_type,
-                                         "rse": rse}}}
-        return util.get_data_single_top_level(query, data_field)
+        results = util.get_data_single_top_level(query)
+        if results:
+            return flask.jsonify({"results": results})
+        else:
+            return flask.abort(404,
+                               "No run with location {} found".format(location))
 
 
 api.add_resource(RunsLocationList,
-                 '/runs/location/<string:location>/')
-api.add_resource(RunsLocationListDataType,
-                 '/runs/location/<string:location>/<string:data_type>')
+                 '/runs/location/<string:location>/',
+                 '/runs/location/<string:location>/<string:data_field>')

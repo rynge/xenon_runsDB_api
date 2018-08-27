@@ -1,3 +1,4 @@
+import flask
 from flask_restful import Resource
 from xenon_runsDB_api.common import util
 from xenon_runsDB_api.app import app, api, mongo
@@ -16,25 +17,32 @@ class RunsStatus(Resource):
     def get(self, status, data_field=None):
         app.logger.debug('Requesting all runs with status: %s', status)
         if status == "not_processed":
-            query = {"$not": {"$elemMatch": {"type": "processed"}},
-                     "$elemMatch": {"type": "raw",
-                                    "status": "transferred"}}
+            sub_query = {"$not": {"$elemMatch": {"type": "processed"}},
+                         "$elemMatch": {"type": "raw",
+                                        "status": "transferred"}}
         elif status == "processing":
-            query = {"$elemMatch": {"type": "processed",
-                                    "status": "processing"}}
+            sub_query = {"$elemMatch": {"type": "processed",
+                                        "status": "processing"}}
         elif status == "processed":
             # No processed data and raw data is transferring
-            query = {"$elemMatch": {"type": "processed",
-                                    "status": "processed"}}
+            sub_query = {"$elemMatch": {"type": "processed",
+                                        "status": "processed"}}
         elif status == "transferring":
             # No processed data and raw data is transferring
-            query = {"$not": {"$elemMatch": {"type": "processed"}},
-                     "$elemMatch": {"type": "raw",
-                                    "status": "transferring"}}
-        query = {"data": query}
+            sub_query = {"$not": {"$elemMatch": {"type": "processed"}},
+                         "$elemMatch": {"type": "raw",
+                                        "status": "transferring"}}
+        else:
+            return flask.abort(404,
+                              "Status {} is not supported".format(status))
+        query = {"data": sub_query}
         results = util.get_data_single_top_level(query, data_field)
         app.logger.debug("results: %s" % results)
-        return results
+        if results:
+            return results
+        else:
+            return flask.abort(404,
+                               "No run with status {} found".format(status))
 
 
 class RunsStatusPAXVersion(Resource):
@@ -52,7 +60,12 @@ class RunsStatusPAXVersion(Resource):
                                     "pax_version": pax_version}}
         results = util.get_data_single_top_level(query, data_field)
         app.logger.debug("results: %s" % results)
-        return results
+        if results:
+            return results
+        else:
+            return flask.abort(404,
+                               ("No run with status {} and PAX version {} "
+                                "found").format(status, pax_version))
 
 
 api.add_resource(RunsStatusInfo, '/runs/status')
