@@ -20,8 +20,8 @@ class RunStatusObjectID(Resource):
     def put(self, object_id, status):
         app.logger.debug("Requesting data for run with object ID %s"
                     % object_id)
-        result = mongo.db["runs_new"].find_one_or_404(
-            {"_id": object_id})
+        mongodb = mongo.db[config["runsDB"]["database_name"]]
+        result = mongodb.find_one_or_404({"_id": object_id})
         # change result according
         if status == "not_processed":
             query = {"$not": {"$elemMatch": {"type": "processed"}},
