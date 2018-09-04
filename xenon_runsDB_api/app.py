@@ -1,12 +1,18 @@
 import os
 import json
 import flask
+import json
 from datetime import datetime
 from flask import url_for
 from flask_restful import Resource, Api
 from flask_pymongo import PyMongo
 from bson import ObjectId
 from bson.json_util import dumps
+
+config_file = os.path.join(os.getcwd(), "config", "api_server_config.json")
+
+with open(config_file) as json_data:
+    config = json.load(json_data)
 
 class JSONEncoder(json.JSONEncoder):
     def default(self, o):
@@ -38,8 +44,8 @@ DEFAULT_REPRESENTATIONS = {'application/json': output_json}
 api = Api(app)
 api.representations = DEFAULT_REPRESENTATIONS
 
-from xenon_runsDB_api.runs import status, list, tag, query, detector, location
 from xenon_runsDB_api.run import run, gains, data
+from xenon_runsDB_api.runs import status, list, tag, query, detector, location, processing_version, source
 
 class Root(Resource):
     def get(self):
