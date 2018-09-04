@@ -2,7 +2,8 @@ import flask
 from webargs import fields
 from webargs.flaskparser import use_kwargs
 from flask_restful import Resource
-from xenon_runsDB_api.app import app, api, mongo
+from xenon_runsDB_api.app import app, api, mongo, config
+from xenon_runsDB_api.common.util import result_formatting
 
 """
 Getting and editing the gains for a run
@@ -21,6 +22,12 @@ class Gains(Resource):
     Super class that provides semi-hidden generalized versions of functions
     needed to GET and PUT for the gains. 
     """
+
+    def __init__(self):
+        self.mongodb = mongo.db[config["runsDB"]["database_name"]]
+        self.views = {config["runsDB"]["views"]["gains"]: 1}.update(
+            config["runsDB"]["views"]["limited_view"])
+
     def _get_(self, key, value):
         """
         Generalized GET function to retrieve the gains
@@ -33,12 +40,7 @@ class Gains(Resource):
             If query successful: JSON object with run identifiers and the gains
             If not: returns 404
         """
-        result = mongo.db.runs_new.find_one_or_404(
-            {key: value},
-            {"_id": 1,
-             "name": 1,
-             "number": 1,
-             "processor.DEFAULT.gains": 1})
+        result = self.mongodb.find_one_or_404({key: value}, self.views)
         app.logger.debug("Query gains: %s "
                          % result)
         return flask.jsonify({"results": result}) 
@@ -55,14 +57,15 @@ class Gains(Resource):
         Returns:
             JSON object that shows the run document before and after the change
         """
-        run_doc_before = mongo.db["runs_new"].find_one_or_404(
-            {key: value})
-        mongo.db["runs_new"].find_one_and_update(
-            {key: value},
-            {"$set": {"processor.DEFAULT.gains": gains}}
-        )
-        run_doc_after = mongo.db["runs_new"].find_one_or_404(
-            {key: value})
+
+        run_doc_before = mongodb.find_one_or_404({key: value}, self.views)
+        run_doc_before = result_formatting(run_doc_before, "processor",
+            "DEFAULT", "gains")
+        self.mongodb.find_one_and_update({key: value},
+            {"$set": {config["runsDB"]["views"]["gains"]: gains}})
+        run_doc_after = mongodb.find_one_or_404({key: value}, self.views)
+        run_doc_after = result_formatting(run_doc_after, "processor",
+            "DEFAULT", "gains")
         return flask.jsonify({"previous_run_doc": run_doc_before,
                               "new_run_doc": run_doc_after})
 

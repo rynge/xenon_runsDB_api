@@ -1,6 +1,6 @@
 import flask
 from flask_restful import Resource
-from xenon_runsDB_api.app import app, api, mongo
+from xenon_runsDB_api.app import app, api, config, mongo
 from xenon_runsDB_api.common.util import result_formatting
 
 
@@ -20,6 +20,10 @@ class Run(Resource):
 
     TODO: Finish POST function for run documents. 
     """
+
+    def __init__(self):
+        self.mongodb = mongo.db[config["runsDB"]["database_name"]]
+
     def _get_(self, key, value, top_level=None, second_level=None,
               third_level=None):
         """
@@ -40,13 +44,12 @@ class Run(Resource):
             If query successful: JSON object of the run document
             If not: returns 404
         """
+        
         app.logger.debug(("key {}, value {}, top_level {}, second_level {}, "
                           "third_level {}").format(key, value, top_level, 
                                                    second_level, third_level))
         if top_level:
-            limited_view = {"_id": 1,
-                "name": 1,
-                "number": 1}
+            limited_view = config["runsDB"]["views"]["limited_view"]
             if not second_level:
                 limited_view.update({top_level: 1})
             if second_level:
@@ -58,12 +61,11 @@ class Run(Resource):
                     first=top_level, 
                     second=second_level,
                     third=third_level): 1})
-            result = mongo.db.runs_new.find_one_or_404({key: value},
-                limited_view)
+            result = self.mongodb.find_one_or_404({key: value}, limited_view)
             result = result_formatting(result, top_level,
                                        second_level, third_level)
         else:
-            result = mongo.db.runs_new.find_one_or_404({key: value})
+            result = self.mongodb.find_one_or_404({key: value})
         app.logger.debug("Query result: %s "
                          % result)
         return flask.jsonify({"results": result})
@@ -79,7 +81,7 @@ class Run(Resource):
         Returns:
             Empty string and status 204
         """
-        mongo.db["runs_new"].delete_one({key: value})
+        self.mongodb.delete_one({key: value})
         return '', 204
     
     def post(self, doc):
