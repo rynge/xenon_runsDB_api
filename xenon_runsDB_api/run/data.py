@@ -1,55 +1,58 @@
 import flask
 from flask_restful import Resource
 from marshmallow import Schema, fields
-from webargs.flaskparser import use_kwargs
+from webargs.flaskparser import use_kwargs, use_args
 from xenon_runsDB_api.common import util
-from xenon_runsDB_api.app import app, api, mongo
+from xenon_runsDB_api.app import app, api, mongo, config
 
 """
 TODO: FINISH ME!
 """
 
-
-class DataNormalArgs(Schema):
-    checksum = fields.String(required=True)
-    creation_place = fields.String(required=True)
-    creation_time = fields.DateTime(format="iso", required=True)
-    host =  fields.String(required=True)
-    location = fields.String(required=True)
-    pax_version = fields.String(required=True)
-    status = fields.String(required=True)
-    type = fields.String(required=True)
-
-    # class Meta:
-    #     strict = True
-
-
-class DataRawArgs(Schema):
-    checksum = fields.String(required=True)
-    creation_time = fields.DateTime(required=True, format="iso")
-    host = fields.String(required=True)
-    location = fields.String(required=True)
-    rse = fields.List(fields.String(required=True))
-    rule_info = fields.List(fields.String(required=True))
-    status = fields.String()
-    type = fields.String()
-
-    # class Meta:
-    #     strict = True
-
-
-def make_user_schema(request):
-    print(request)
+# webargs/Marshmellow de/serialization object definition
+# We require the same fields as the DAQ to be present.
+data_args = {
+    # String with all file checksums
+    "checksum": fields.String(required=True),
+    # date time in iso format
+    "creation_time": fields.DateTime(format="iso", required=True),
+    # Where the data was created
+    "creation_place": fields.String(),
+    # Where the data is located 
+    "host": fields.String(required=True),
+    # Location of the data on the host
+    "location": fields.String(required=True),
+    # Type of data data
+    "type": fields.String(required=True),
+    # What the status is
+    "status": fields.String(required=True),
+    # For raw data only, where the data is located
+    "rse": fields.List(fields.String()),
+    # For raw data only, what the status 
+    "rule_info": fields.List(fields.String()),
+    # hash used by strax to identify processing version
+    "strax_hash": fields.String(),
+    # pax version that was used for processing
+    "pax_version": fields.String()
+}
 
 
 class RunData(Resource):
+
+    def __init__(self):
+        self.mongodb = mongo.db[config["runsDB"]["database_name"]]
+        self.views = {"data": 1}.update(
+            config["runsDB"]["views"]["limited_view"])
+
     def _get_(self, key, value, data_type=None):
+        """
+        
+        """
         app.logger.debug("Requesting data for run with %s %s"
                          % (key, value))
-        result = mongo.db["runs_new"].find_one_or_404(
-            {key: value}, 
-            {"data": 1, "name": 1, "_id": 1, "number": 1}
-        )
+        app.logger.debug("views %s" % self.views)
+        result = self.mongodb.find_one_or_404({key: value}, self.views)
+        app.logger.debug("Query results: %s", result)
         if data_type:
             limited_data = [do for do in result["data"] 
                             if do["type"] == data_type]
@@ -58,16 +61,34 @@ class RunData(Resource):
         return result
     
     def _post_data_(self, key, value, data):
-        run_doc_before = mongo.db["runs_new"].find_one_or_404(
-            {key: value})
-        mongo.db["runs_new"].find_one_and_update(
-            {key: value},
-            {"$push": {"data": data}}
-        )
-        run_doc_after= mongo.db["runs_new"].find_one_or_404(
-            {key: value})
+        """
+        
+        """
+        run_doc_before = self.mongodb.find_one_or_404({key: value}, self.views)
+        run_doc_before = util.result_formatting(run_doc_before, "data")
+        data = util.fix_marshmallow_decoding(data)
+        self.mongodb.find_one_and_update({key: value}, 
+                                         {"$push": {"data": data}})
+        run_doc_after = self.mongodb.find_one_or_404({key: value}, self.views)
+        run_doc_after = util.result_formatting(run_doc_after, "data")
         return flask.jsonify({"previous_run_doc": run_doc_before,
                               "new_run_doc": run_doc_after})
+
+    def _delete_(self, key, value, data):
+        """
+        
+        """
+        run_doc_before = self.mongodb.find_one_or_404({key: value}, self.views)
+        run_doc_before = util.result_formatting(run_doc_before, "data")
+        data = util.fix_marshmallow_decoding(data)
+        app.logger.debug("Data being deleted: %s", data)
+        self.mongodb.find_one_and_update({key: value},
+            {"$pull": {"data": data}})
+        run_doc_after = self.mongodb.find_one_or_404({key: value}, self.views)
+        run_doc_after = util.result_formatting(run_doc_after, "data")
+        return flask.jsonify({"previous_run_doc": run_doc_before,
+                              "new_run_doc": run_doc_after})
+
 
 
 class RunObjectIDData(RunData):
@@ -77,17 +98,25 @@ class RunObjectIDData(RunData):
         else:
             result = self._get_("object_id", object_id, data_type)
         return flask.jsonify({"results": result})
+    
+    @use_kwargs(data_args, locations=["json"])
+    def post(self, object_id, **data):
+        return self._post_data_("_id", object_id, data)
+
 
 class RunRunNumberData(RunData):
     def get(self, run_number, data_type=None):
-        if not data_type:
-            result = self._get_("number", run_number)
-        else:
-            result = self._get_("number", run_number, data_type)
+        result = self._get_("number", run_number, data_type)
         return flask.jsonify({"results": result})
-    @use_kwargs(make_user_schema)
-    def put(self, run_number, data_type=None):
-        pass
+    
+    @use_kwargs(data_args, locations=["json"])
+    def post(self, run_number, **data):
+        return self._post_data_("number", run_number, data)
+
+    @use_kwargs(data_args, locations=["json"])
+    def delete(self, run_number, **data):
+        return self._delete_("number", run_number, data)
+
 
 class RunTimestampData(RunData):
     def get(self, timestamp, data_type=None):
@@ -97,9 +126,10 @@ class RunTimestampData(RunData):
         else:
             result = self._get_("name", timestamp, data_type)
         return flask.jsonify({"results": result})
-    @use_kwargs(make_user_schema)
-    def put(self, timestamp, data_type=None):
-        pass
+    
+    @use_kwargs(data_args, locations=["json"])
+    def post(self, timestamp, **data):
+        return self._post_data_("name", timestamp, data)
 
 
 api.add_resource(RunObjectIDData,
