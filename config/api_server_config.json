@@ -1,0 +1,15 @@
+{
+    "runsDB": {
+        "default_url": "mongodb://localhost:27017/run",
+        "database_name": "runs_new",
+        "views": {
+            "limited_view": {"_id": 1, "name": 1, "number": 1},
+            "gains": "processor.DEFAULT.gains"
+        }
+    },
+    "server":{
+        "url": null,
+        "port": null,
+        "debug": true
+    }
+}
