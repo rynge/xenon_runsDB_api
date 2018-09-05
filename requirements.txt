@@ -13,3 +13,4 @@ six==1.11.0
 wsgiref==0.1.2
 webargs==4.0.0
 marshmallow>=2.7.0
+flask-praetorian==0.4.8
