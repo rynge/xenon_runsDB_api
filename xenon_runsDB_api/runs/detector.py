@@ -1,8 +1,10 @@
+import flask_praetorian
 from flask_restful import Resource
 from xenon_runsDB_api.app import app, api, mongo
 
 
 class RunsDetector(Resource):
+    @flask_praetorian.roles_required('user')
     def get(self, detector, data_field=None):
         app.logger.debug('Requesting all runs with detector: %s',
                          detector)

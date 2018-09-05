@@ -1,4 +1,5 @@
 import flask
+import flask_praetorian
 from webargs import fields
 from webargs.flaskparser import use_kwargs
 from flask_restful import Resource
@@ -28,6 +29,7 @@ class Gains(Resource):
         self.views = {config["runsDB"]["views"]["gains"]: 1}.update(
             config["runsDB"]["views"]["limited_view"])
 
+    @flask_praetorian.decorators.roles_required("user")
     def _get_(self, key, value):
         """
         Generalized GET function to retrieve the gains
@@ -43,8 +45,9 @@ class Gains(Resource):
         result = self.mongodb.find_one_or_404({key: value}, self.views)
         app.logger.debug("Query gains: %s "
                          % result)
-        return flask.jsonify({"results": result}) 
+        return flask.jsonify({"results": result})
 
+    @flask_praetorian.decorators.roles_required("production")
     def _put_(self, key, value, gains):
         """
         Generalized PUT function to insert gains

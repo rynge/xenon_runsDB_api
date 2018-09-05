@@ -1,5 +1,6 @@
-from flask_restful import Resource
 import ast
+import flask_praetorian
+from flask_restful import Resource
 from flask import request
 from marshmallow import Schema
 from webargs import fields

@@ -1,10 +1,12 @@
 import flask
+import flask_praetorian
 from flask_restful import Resource
 from xenon_runsDB_api.common import util
 from xenon_runsDB_api.app import app, api
 
 
 class RunsLocationList(Resource):
+    @flask_praetorian.roles_required('user')
     def get(self, location, data_field=None):
         query = {"data": {"$elemMatch": {"host": "rucio-catalogue",
                                          "rse": location}}}

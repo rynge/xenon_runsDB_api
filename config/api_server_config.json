@@ -7,6 +7,16 @@
             "gains": "processor.DEFAULT.gains"
         }
     },
+    "user_auth": {
+        "database": {
+            "default_url": "sqlite:///user_database.db"
+        },
+        "jwt": {
+            "default_secret": "lzstinks",
+            "access_token_lifespan": {"hours": 24},
+            "refresh_token_lifespan": {"days": 30}
+        }
+    },
     "server":{
         "url": null,
         "port": null,

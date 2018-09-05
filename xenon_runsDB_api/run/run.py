@@ -1,4 +1,5 @@
 import flask
+import flask_praetorian
 from flask_restful import Resource
 from xenon_runsDB_api.app import app, api, config, mongo
 from xenon_runsDB_api.common.util import result_formatting
@@ -24,6 +25,7 @@ class Run(Resource):
     def __init__(self):
         self.mongodb = mongo.db[config["runsDB"]["database_name"]]
 
+    @flask_praetorian.roles_required('user')
     def _get_(self, key, value, top_level=None, second_level=None,
               third_level=None):
         """
@@ -70,6 +72,7 @@ class Run(Resource):
                          % result)
         return flask.jsonify({"results": result})
     
+    @flask_praetorian.roles_required('admin')
     def _delete_(self, key, value):
         """
         Generalized DELETE function to make DB delete calls
@@ -84,7 +87,8 @@ class Run(Resource):
         self.mongodb.delete_one({key: value})
         return '', 204
     
-    def post(self, doc):
+    @flask_praetorian.roles_required('production', 'admin')
+    def _post_(self, doc):
         """
         TODO: Add webargs to parse a preliminary JSON doc needed to add a run
         doc to the runsDB

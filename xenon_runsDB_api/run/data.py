@@ -1,13 +1,11 @@
 import flask
+import flask_praetorian
 from flask_restful import Resource
 from marshmallow import Schema, fields
 from webargs.flaskparser import use_kwargs, use_args
 from xenon_runsDB_api.common import util
 from xenon_runsDB_api.app import app, api, mongo, config
 
-"""
-TODO: FINISH ME!
-"""
 
 # webargs/Marshmellow de/serialization object definition
 # We require the same fields as the DAQ to be present.

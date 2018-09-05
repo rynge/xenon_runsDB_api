@@ -1,9 +1,11 @@
 import flask
+import flask_praetorian
 from flask_restful import Resource
 from xenon_runsDB_api.common import util
 from xenon_runsDB_api.app import app, api
 
 class RunsTag(Resource):
+    @flask_praetorian.roles_required('user')
     def get(self, tag, data_field=None):
         app.logger.debug("Getting all runs with tag %s" % tag)
         query = {"tags.name": tag}

@@ -1,4 +1,5 @@
 import flask
+import flask_praetorian
 from flask_restful import Resource
 from xenon_runsDB_api.common import util
 from xenon_runsDB_api.app import app, api, mongo
@@ -14,6 +15,7 @@ transferring: Runs that are transferring from LNGS and haven't been processed
 
 
 class RunsStatus(Resource):
+    @flask_praetorian.roles_required('user')
     def get(self, status, data_field=None):
         app.logger.debug('Requesting all runs with status: %s', status)
         if status == "not_processed":
@@ -46,6 +48,7 @@ class RunsStatus(Resource):
 
 
 class RunsStatusPAXVersion(Resource):
+    @flask_praetorian.roles_required('user')
     def get(self, status, pax_version, data_field=None):
         app.logger.debug(('Requesting all runs with status: %s and '
                           'PAX version: %s'),
