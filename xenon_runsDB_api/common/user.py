@@ -1,4 +1,6 @@
+import flask_praetorian
 from xenon_runsDB_api.app import db
+
 
 # A generic user model
 class User(db.Model):
