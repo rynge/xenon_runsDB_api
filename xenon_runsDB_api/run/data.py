@@ -91,15 +91,16 @@ class RunData(Resource):
 
 class RunObjectIDData(RunData):
     def get(self, object_id, data_type=None):
-        if not data_type:
-            result = self._get_("object_id", object_id)
-        else:
-            result = self._get_("object_id", object_id, data_type)
+        result = self._get_("object_id", object_id, data_type)
         return flask.jsonify({"results": result})
     
     @use_kwargs(data_args, locations=["json"])
     def post(self, object_id, **data):
         return self._post_data_("_id", object_id, data)
+
+    @use_kwargs(data_args, locations=["json"])
+    def delete(self, run_number, **data):
+        return self._delete_("_id", object_id, data)
 
 
 class RunRunNumberData(RunData):
@@ -118,16 +119,16 @@ class RunRunNumberData(RunData):
 
 class RunTimestampData(RunData):
     def get(self, timestamp, data_type=None):
-        print(timestamp)
-        if not data_type:
-            result = self._get_("name", timestamp)
-        else:
-            result = self._get_("name", timestamp, data_type)
+        result = self._get_("name", timestamp, data_type)
         return flask.jsonify({"results": result})
     
     @use_kwargs(data_args, locations=["json"])
     def post(self, timestamp, **data):
         return self._post_data_("name", timestamp, data)
+
+    @use_kwargs(data_args, locations=["json"])
+    def delete(self, timestamp, **data):
+        return self._delete_("name", timestamp, data)
 
 
 api.add_resource(RunObjectIDData,
@@ -135,14 +136,16 @@ api.add_resource(RunObjectIDData,
                  endpoint="run_object_id_data_no_type")
 api.add_resource(RunObjectIDData,
                  '/run/objectid/<ObjectId:object_id>/data/<string:data_type>/',
-                 endpoint="run_object_id_data")
+                 endpoint="run_object_id_data",
+                 methods=['GET'])
 
 api.add_resource(RunObjectIDData,
                  '/runs/objectid/<ObjectId:object_id>/data/',
                  endpoint="runs_object_id_data_no_type")
 api.add_resource(RunObjectIDData,
                  '/runs/objectid/<ObjectId:object_id>/data/<string:data_type>/',
-                 endpoint="runs_object_id_data")
+                 endpoint="runs_object_id_data",
+                 methods=['GET'])
 
 
 api.add_resource(RunRunNumberData,
@@ -150,28 +153,32 @@ api.add_resource(RunRunNumberData,
                  endpoint="run_number_data_no_type")
 api.add_resource(RunRunNumberData,
                  '/run/number/<int:run_number>/data/<string:data_type>/',
-                 endpoint="run_number_data")
+                 endpoint="run_number_data",
+                 methods=['GET'])
 
 api.add_resource(RunRunNumberData,
                  '/run/runnumber/<int:run_number>/data/',
                  endpoint="run_run_number_data_no_type")
 api.add_resource(RunRunNumberData,
                  '/run/runnumber/<int:run_number>/data/<string:data_type>/',
-                 endpoint="run_run_number_data")       
+                 endpoint="run_run_number_data",
+                 methods=['GET'])       
 
-api.add_resource(RunRunNumberData,
-                 '/runs/number/<int:run_number>/data/<string:data_type>/',
-                 endpoint="runs_number_data")
 api.add_resource(RunRunNumberData,
                  '/runs/number/<int:run_number>/data/',
                  endpoint="runs_number_data_no_type")
+api.add_resource(RunRunNumberData,
+                 '/runs/number/<int:run_number>/data/<string:data_type>/',
+                 endpoint="runs_number_data",
+                 methods=['GET'])
 
 api.add_resource(RunRunNumberData,
                  '/runs/runnumber/<int:run_number>/data/',
                  endpoint="runs_run_number_data_no_type")
 api.add_resource(RunRunNumberData,
                  '/runs/runnumber/<int:run_number>/data/<string:data_type>/',
-                 endpoint="runs_run_number_data")
+                 endpoint="runs_run_number_data",
+                 methods=['GET'])
 
 
 api.add_resource(RunTimestampData,
@@ -179,25 +186,29 @@ api.add_resource(RunTimestampData,
                  endpoint="run_timestamp_data_no_type")
 api.add_resource(RunTimestampData,
                  '/run/timestamp/<string:timestamp>/data/<string:data_type>/',
-                 endpoint="run_timestamp_data")
+                 endpoint="run_timestamp_data",
+                 methods=['GET'])
 
 api.add_resource(RunTimestampData,
                  '/run/name/<string:timestamp>/data/',
                  endpoint="run_name_timestamp_data_no_type")
 api.add_resource(RunTimestampData,
                  '/run/name/<string:timestamp>/data/<string:data_type>/',
-                 endpoint="run_name_timestamp_data")
+                 endpoint="run_name_timestamp_data",
+                 methods=['GET'])
 
 api.add_resource(RunTimestampData,
                  '/runs/timestamp/<string:timestamp>/data/',
                  endpoint="runs_timestamp_data_no_type")
 api.add_resource(RunTimestampData,
                  '/runs/timestamp/<string:timestamp>/data/<string:data_type>/',
-                 endpoint="runs_timestamp_data")
+                 endpoint="runs_timestamp_data",
+                 methods=['GET'])
 
 api.add_resource(RunTimestampData,
                  '/runs/name/<string:timestamp>/data/',
                  endpoint="runs_name_timestamp_data_no_type")
 api.add_resource(RunTimestampData,
                  '/runs/name/<string:timestamp>/data/<string:data_type>/',
-                 endpoint="runs_name_timestamp_data")
+                 endpoint="runs_name_timestamp_data",
+                 methods=['GET'])
