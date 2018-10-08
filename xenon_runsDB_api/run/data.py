@@ -39,8 +39,8 @@ class RunData(Resource):
 
     def __init__(self):
         self.mongodb = mongo.db[config["runsDB"]["database_name"]]
-        self.views = {"data": 1}.update(
-            config["runsDB"]["views"]["limited_view"])
+        self.views = {"data": 1}
+        self.views.update(config["runsDB"]["views"]["limited_view"])
 
     def _get_(self, key, value, data_type=None):
         """
