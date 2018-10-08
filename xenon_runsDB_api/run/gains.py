@@ -26,8 +26,8 @@ class Gains(Resource):
 
     def __init__(self):
         self.mongodb = mongo.db[config["runsDB"]["database_name"]]
-        self.views = {config["runsDB"]["views"]["gains"]: 1}.update(
-            config["runsDB"]["views"]["limited_view"])
+        self.views = {config["runsDB"]["views"]["gains"]: 1}
+        self.views.update(config["runsDB"]["views"]["limited_view"])
 
     @flask_praetorian.decorators.roles_required("user")
     def _get_(self, key, value):
