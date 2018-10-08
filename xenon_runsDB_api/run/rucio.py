@@ -58,7 +58,7 @@ class RunTimestampRucio(RunRucio):
 
 
 api.add_resource(RunObjectIDRucio,
-                 '/run/objectid/<ObjectId:object_id>/data/dids',
+                 '/run/objectid/<ObjectId:object_id>/data/dids/',
                  endpoint="run_did_object_id_data_no_type")
 api.add_resource(RunObjectIDRucio,
                  ('/run/objectid/<ObjectId:object_id>'
@@ -67,7 +67,7 @@ api.add_resource(RunObjectIDRucio,
                  methods=['GET'])
 
 api.add_resource(RunObjectIDRucio,
-                 '/runs/objectid/<ObjectId:object_id>/data/dids',
+                 '/runs/objectid/<ObjectId:object_id>/data/dids/',
                  endpoint="runs_did_object_id_data_no_type")
 api.add_resource(RunObjectIDRucio,
                  ('/runs/objectid/<ObjectId:object_id>'
@@ -77,7 +77,7 @@ api.add_resource(RunObjectIDRucio,
 
 
 api.add_resource(RunRunNumberRucio,
-                 '/run/number/<int:run_number>/data/dids',
+                 '/run/number/<int:run_number>/data/dids/',
                  endpoint="run_did_number_data_no_type")
 api.add_resource(RunRunNumberRucio,
                  ('/run/number/<int:run_number>'
@@ -86,7 +86,7 @@ api.add_resource(RunRunNumberRucio,
                  methods=['GET'])
 
 api.add_resource(RunRunNumberRucio,
-                 '/run/runnumber/<int:run_number>/data/dids',
+                 '/run/runnumber/<int:run_number>/data/dids/',
                  endpoint="run_did_run_number_data_no_type")
 api.add_resource(RunRunNumberRucio,
                  ('/run/runnumber/<int:run_number>'
@@ -95,7 +95,7 @@ api.add_resource(RunRunNumberRucio,
                  methods=['GET'])       
 
 api.add_resource(RunRunNumberRucio,
-                 '/runs/number/<int:run_number>/data/dids',
+                 '/runs/number/<int:run_number>/data/dids/',
                  endpoint="runs_did_number_data_no_type")
 api.add_resource(RunRunNumberRucio,
                  ('/runs/number/<int:run_number>'
@@ -104,7 +104,7 @@ api.add_resource(RunRunNumberRucio,
                  methods=['GET'])
 
 api.add_resource(RunRunNumberRucio,
-                 '/runs/runnumber/<int:run_number>/data/dids',
+                 '/runs/runnumber/<int:run_number>/data/dids/',
                  endpoint="runs_did_run_number_data_no_type")
 api.add_resource(RunRunNumberRucio,
                  ('/runs/runnumber/<int:run_number>'
@@ -114,7 +114,7 @@ api.add_resource(RunRunNumberRucio,
 
 
 api.add_resource(RunTimestampRucio,
-                 '/run/timestamp/<string:timestamp>/data/dids',
+                 '/run/timestamp/<string:timestamp>/data/dids/',
                  endpoint="run_did_timestamp_data_no_type")
 api.add_resource(RunTimestampRucio,
                  ('/run/timestamp/<string:timestamp>'
@@ -123,7 +123,7 @@ api.add_resource(RunTimestampRucio,
                  methods=['GET'])
 
 api.add_resource(RunTimestampRucio,
-                 '/run/name/<string:timestamp>/data/dids',
+                 '/run/name/<string:timestamp>/data/dids/',
                  endpoint="run_did_name_timestamp_data_no_type")
 api.add_resource(RunTimestampRucio,
                  ('/run/name/<string:timestamp>'
@@ -132,7 +132,7 @@ api.add_resource(RunTimestampRucio,
                  methods=['GET'])
 
 api.add_resource(RunTimestampRucio,
-                 '/runs/timestamp/<string:timestamp>/data/dids',
+                 '/runs/timestamp/<string:timestamp>/data/dids/',
                  endpoint="runs_did_timestamp_data_no_type")
 api.add_resource(RunTimestampRucio,
                  ('/runs/timestamp/<string:timestamp>'
@@ -141,7 +141,7 @@ api.add_resource(RunTimestampRucio,
                  methods=['GET'])
 
 api.add_resource(RunTimestampRucio,
-                 '/runs/name/<string:timestamp>/data/dids',
+                 '/runs/name/<string:timestamp>/data/dids/',
                  endpoint="runs_did_name_timestamp_data_no_type")
 api.add_resource(RunTimestampRucio,
                  ('/runs/name/<string:timestamp>'
