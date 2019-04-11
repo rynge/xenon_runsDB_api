@@ -31,7 +31,9 @@ data_args = {
     # hash used by strax to identify processing version
     "strax_hash": fields.String(),
     # pax version that was used for processing
-    "pax_version": fields.String()
+    "pax_version": fields.String(),
+    # metadata for chunks
+    "meta": fields.Dict()
 }
 
 

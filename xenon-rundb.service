@@ -1,6 +1,6 @@
-[Unit]                                                                                              
-Description=XENON RunDB service                                                                     
-After=network.target                                                                                
+[Unit]
+Description=XENON RunDB service
+After=network.target
 
 [Service]
 Type=simple

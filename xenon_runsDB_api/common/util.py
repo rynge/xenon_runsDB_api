@@ -24,7 +24,8 @@ def get_data_single_top_level(query, additional_top_level=None):
     elif additional_top_level:
         return flask.abort(404, "Please pass a string or list of fields")
     limited_view = config["runsDB"]["views"]["limited_view"]
-    limited_view.update({tlf: 1 for tlf in additional_top_level})    
+    if additional_top_level:
+        limited_view.update({tlf: 1 for tlf in additional_top_level})
     cursor = mongodb.find(query, limited_view)  
     app.logger.debug('Requesting %s records' % cursor.count())
     # Need to convert cursor to list
