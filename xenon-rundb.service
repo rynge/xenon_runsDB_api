@@ -1,0 +1,16 @@
+[Unit]                                                                                              
+Description=XENON RunDB service                                                                     
+After=network.target                                                                                
+
+[Service]
+Type=simple
+User=centos
+Group=centos
+WorkingDirectory=/home/centos/xenon_runsdb/xenon_runsDB_api
+# full path to python activates the venv
+ExecStart=/home/centos/xenon_runsdb/xenon_rest_api_env_python3/bin/python3.6 run_server.py
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+
